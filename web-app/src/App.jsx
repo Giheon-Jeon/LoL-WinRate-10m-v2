@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import metadata from './data/model_metadata.json';
-import champMetadata from './data/champ_metadata.json';
+import metadata from './data/unified_metadata.json';
 import GaugeChart from './components/GaugeChart';
 import ConfusionMatrixView from './components/ConfusionMatrixView';
 import LaneInputTab from './components/LaneInputTab';
@@ -129,29 +128,28 @@ const getPresets = () => {
 
 const App = () => {
   const presets = getPresets();
-  const [predictorMode, setPredictorMode] = useState('stats'); // 'stats' | 'champions'
   const [values, setValues] = useState(presets.avg);
-  const [activeTab, setActiveTab] = useState('general'); // 'general', 'top', 'jungle', 'middle', 'bottom', 'utility'
+  const [blueChamps, setBlueChamps] = useState(['Aatrox', 'LeeSin', 'Ahri', 'Ezreal', 'Alistar']);
+  const [redChamps, setRedChamps] = useState(['Darius', 'Elise', 'Syndra', 'Jinx', 'Thresh']);
+  const [activeTab, setActiveTab] = useState('champions'); // Default to champions tab
   const [selectedModel, setSelectedModel] = useState('xgb'); // 'lr', 'rf', 'xgb'
   const [predictions, setPredictions] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Clear predictions on mode change
-  useEffect(() => {
-    setPredictions(null);
-    setError(null);
-  }, [predictorMode]);
-
-  // Run prediction API request (for stats mode)
-  const fetchPredictions = async (currentValues) => {
+  // Run prediction API request (unified stats + picks)
+  const fetchPredictions = async (currentValues, currentBlueChamps, currentRedChamps) => {
     setIsLoading(true);
     try {
       const apiHost = import.meta.env.VITE_API_HOST || '';
-      const res = await fetch(`${apiHost}/api/predict`, {
+      const res = await fetch(`${apiHost}/api/predict_unified`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentValues),
+        body: JSON.stringify({
+          ...currentValues,
+          blue_champions: currentBlueChamps,
+          red_champions: currentRedChamps
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -168,15 +166,14 @@ const App = () => {
     }
   };
 
-  // Debounce API calls to prevent flooding during slider drag (only in stats mode)
+  // Debounce API calls to prevent flooding during slider drag or champion change
   useEffect(() => {
-    if (predictorMode !== 'stats') return;
     const delayDebounce = setTimeout(() => {
-      fetchPredictions(values);
+      fetchPredictions(values, blueChamps, redChamps);
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [values, predictorMode]);
+  }, [values, blueChamps, redChamps]);
 
   const handleValueChange = (key, value) => {
     // Clamp values based on statistics boundaries
@@ -278,6 +275,7 @@ const App = () => {
   };
 
   const laneTabs = [
+    { id: 'champions', title: '챔피언 조합 (Pick)' },
     { id: 'general', title: '공통 오브젝트' },
     { id: 'top', title: '탑 (Top)' },
     { id: 'jungle', title: '정글 (Jungle)' },
@@ -301,112 +299,87 @@ const App = () => {
           </h1>
         </div>
         <p className="text-xs md:text-sm text-lol-goldLight/60 max-w-2xl leading-relaxed">
-          Riot Games 상위 티어 경기 데이터를 학습한 AI 모델들을 통해 경기 상황 지표 혹은 챔피언 조합에 따른 실시간 예상 승률을 제공합니다.
+          Riot Games 상위 티어 경기 데이터를 학습한 AI 모델들을 통해 챔피언 조합과 15분 인게임 지표를 동시에 고려한 실시간 통합 승률을 제공합니다.
         </p>
 
-        {/* Predictor Mode Toggle */}
-        <div className="flex gap-4 mt-6 border-b border-lol-border/20 pb-4 w-full max-w-md justify-center">
+        {/* Global Preset Bar */}
+        <div className="flex flex-wrap gap-2 justify-center mt-6 p-2 bg-lol-greyDark/50 border border-lol-border/20 rounded-lg shadow-hextech">
           <button
-            onClick={() => setPredictorMode('stats')}
-            className={`px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-all border ${
-              predictorMode === 'stats'
-                ? 'border-lol-gold text-lol-gold bg-lol-gold/10 shadow-hextech'
-                : 'border-lol-border/40 text-lol-goldLight/50 hover:text-lol-goldLight'
-            } rounded-md`}
+            onClick={() => loadPreset('avg')}
+            className="px-3 py-1 text-xs font-bold border border-lol-border/50 rounded bg-lol-obsidian hover:border-lol-gold hover:text-lol-gold transition-all"
           >
-            인게임 15분 지표 예측
+            기본 평균값 로드
           </button>
           <button
-            onClick={() => setPredictorMode('champions')}
-            className={`px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-all border ${
-              predictorMode === 'champions'
-                ? 'border-lol-gold text-lol-gold bg-lol-gold/10 shadow-hextech'
-                : 'border-lol-border/40 text-lol-goldLight/50 hover:text-lol-goldLight'
-            } rounded-md`}
+            onClick={() => loadPreset('even')}
+            className="px-3 py-1 text-xs font-bold border border-lol-border/50 rounded bg-lol-obsidian hover:border-lol-gold hover:text-lol-gold transition-all"
           >
-            챔피언 조합별 승률 예측
+            초접전 (격차 없음)
+          </button>
+          <button
+            onClick={() => loadPreset('blueStomp')}
+            className="px-3 py-1 text-xs font-bold border border-lol-blue/30 text-lol-blueLight rounded bg-lol-blue/10 hover:bg-lol-blue/20 transition-all"
+          >
+            블루 압도 (Blue Win)
+          </button>
+          <button
+            onClick={() => loadPreset('redStomp')}
+            className="px-3 py-1 text-xs font-bold border border-lol-redLight/20 text-lol-redLight rounded bg-lol-redDark/10 hover:bg-lol-redDark/20 transition-all"
+          >
+            레드 압도 (Red Win)
           </button>
         </div>
-
-        {/* Global Preset Bar (Only for stats mode) */}
-        {predictorMode === 'stats' && (
-          <div className="flex flex-wrap gap-2 justify-center mt-6 p-2 bg-lol-greyDark/50 border border-lol-border/20 rounded-lg shadow-hextech">
-            <button
-              onClick={() => loadPreset('avg')}
-              className="px-3 py-1 text-xs font-bold border border-lol-border/50 rounded bg-lol-obsidian hover:border-lol-gold hover:text-lol-gold transition-all"
-            >
-              기본 평균값 로드
-            </button>
-            <button
-              onClick={() => loadPreset('even')}
-              className="px-3 py-1 text-xs font-bold border border-lol-border/50 rounded bg-lol-obsidian hover:border-lol-gold hover:text-lol-gold transition-all"
-            >
-              초접전 (격차 없음)
-            </button>
-            <button
-              onClick={() => loadPreset('blueStomp')}
-              className="px-3 py-1 text-xs font-bold border border-lol-blue/30 text-lol-blueLight rounded bg-lol-blue/10 hover:bg-lol-blue/20 transition-all"
-            >
-              블루 압도 (Blue Win)
-            </button>
-            <button
-              onClick={() => loadPreset('redStomp')}
-              className="px-3 py-1 text-xs font-bold border border-lol-redLight/20 text-lol-redLight rounded bg-lol-redDark/10 hover:bg-lol-redDark/20 transition-all"
-            >
-              레드 압도 (Red Win)
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left/Center Columns: Input Fields */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {predictorMode === 'stats' ? (
-            <div className="flex flex-col gap-6">
-              {/* Tabs Navigation */}
-              <div className="flex border-b border-lol-border/30 overflow-x-auto whitespace-nowrap scrollbar-none pb-0.5">
-                {laneTabs.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setActiveTab(t.id)}
-                    className={`px-4 py-2.5 text-xs md:text-sm font-bold tracking-wide transition-all border-b-2 -mb-0.5 ${
-                      activeTab === t.id
-                        ? 'border-lol-gold text-lol-gold bg-lol-greyDark/30'
-                        : 'border-transparent text-lol-goldLight/50 hover:text-lol-goldLight'
-                    }`}
-                  >
-                    {t.title}
-                  </button>
-                ))}
-              </div>
+          <div className="flex flex-col gap-6">
+            {/* Tabs Navigation */}
+            <div className="flex border-b border-lol-border/30 overflow-x-auto whitespace-nowrap scrollbar-none pb-0.5">
+              {laneTabs.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`px-4 py-2.5 text-xs md:text-sm font-bold tracking-wide transition-all border-b-2 -mb-0.5 ${
+                    activeTab === t.id
+                      ? 'border-lol-gold text-lol-gold bg-lol-greyDark/30'
+                      : 'border-transparent text-lol-goldLight/50 hover:text-lol-goldLight'
+                  }`}
+                >
+                  {t.title}
+                </button>
+              ))}
+            </div>
 
-              {/* Active Tab Panel */}
-              <div className="bg-lol-obsidian/45 backdrop-blur-md border border-lol-border/30 rounded-lg p-6 shadow-hextech min-h-[350px]">
-                {activeTab === 'general' ? (
-                  renderGeneralTab()
-                ) : (
-                  <LaneInputTab
-                    lane={activeTab}
-                    laneTitle={laneTabs.find((t) => t.id === activeTab)?.title.split(' ')[0] || ''}
-                    values={values}
-                    onChange={handleValueChange}
-                    stats={metadata.stats}
-                  />
-                )}
-              </div>
-            </div>
-          ) : (
+            {/* Active Tab Panel */}
             <div className="bg-lol-obsidian/45 backdrop-blur-md border border-lol-border/30 rounded-lg p-6 shadow-hextech min-h-[350px]">
-              <ChampPredictor onPredict={setPredictions} isLoading={isLoading} />
+              {activeTab === 'champions' ? (
+                <ChampPredictor
+                  blueChamps={blueChamps}
+                  setBlueChamps={setBlueChamps}
+                  redChamps={redChamps}
+                  setRedChamps={setRedChamps}
+                />
+              ) : activeTab === 'general' ? (
+                renderGeneralTab()
+              ) : (
+                <LaneInputTab
+                  lane={activeTab}
+                  laneTitle={laneTabs.find((t) => t.id === activeTab)?.title.split(' ')[0] || ''}
+                  values={values}
+                  onChange={handleValueChange}
+                  stats={metadata.stats}
+                />
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Right Column: Prediction Results */}
         <div className="flex flex-col gap-6">
           <h3 className="text-base font-bold text-lol-gold uppercase tracking-wider">
-            실시간 예측 결과 ({predictorMode === 'stats' ? '15분 수치' : '챔피언 조합'})
+            실시간 예측 결과 (통합 모델)
           </h3>
 
           {isLoading && !predictions && (
@@ -456,7 +429,7 @@ const App = () => {
       <div className="w-full max-w-6xl mt-12 border-t border-lol-border/30 pt-8 flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-lol-gold uppercase tracking-wider">
-            {predictorMode === 'stats' ? '15분 지표 모델' : '챔피언 조합 모델'} 성능 및 오차행렬
+            통합 예측 모델 성능 및 오차행렬
           </h3>
           <div className="flex gap-2">
             <button
@@ -500,7 +473,7 @@ const App = () => {
               ? 'Logistic Regression'
               : 'Random Forest'
           }
-          metrics={predictorMode === 'stats' ? metadata[selectedModel] : champMetadata[selectedModel]}
+          metrics={metadata[selectedModel]}
         />
       </div>
     </div>

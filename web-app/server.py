@@ -39,6 +39,11 @@ lr_champ = joblib.load(os.path.join(models_dir, 'lr_champ.pkl'))
 rf_champ = joblib.load(os.path.join(models_dir, 'rf_champ.pkl'))
 xgb_champ = joblib.load(os.path.join(models_dir, 'xgb_champ.pkl'))
 
+scaler_unified = joblib.load(os.path.join(models_dir, 'scaler_unified.pkl'))
+lr_unified = joblib.load(os.path.join(models_dir, 'lr_unified.pkl'))
+rf_unified = joblib.load(os.path.join(models_dir, 'rf_unified.pkl'))
+xgb_unified = joblib.load(os.path.join(models_dir, 'xgb_unified.pkl'))
+
 columns = [
     'blue_dragons', 'blue_towers', 'blue_kills', 'blue_firstBlood', 'blue_voidgrubs',
     'red_dragons', 'red_towers', 'red_kills', 'red_voidgrubs',
@@ -117,6 +122,71 @@ async def predict_champ(input_data: dict):
         lr_prob = float(lr_champ.predict_proba(df_input)[0, 1])
         rf_prob = float(rf_champ.predict_proba(df_input)[0, 1])
         xgb_prob = float(xgb_champ.predict_proba(df_input)[0, 1])
+
+        return {
+            'success': True,
+            'predictions': {
+                'logistic_regression': {
+                    'blue_win_rate': round(lr_prob * 100, 2),
+                    'red_win_rate': round((1 - lr_prob) * 100, 2)
+                },
+                'random_forest': {
+                    'blue_win_rate': round(rf_prob * 100, 2),
+                    'red_win_rate': round((1 - rf_prob) * 100, 2)
+                },
+                'xgboost': {
+                    'blue_win_rate': round(xgb_prob * 100, 2),
+                    'red_win_rate': round((1 - xgb_prob) * 100, 2)
+                }
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/predict_unified")
+async def predict_unified(input_data: dict):
+    try:
+        data = {}
+        for col in columns:
+            data[col] = float(input_data.get(col, 0.0))
+
+        # compute gold diffs
+        data['top_gold_diff'] = data['blue_top_gold'] - data['red_top_gold']
+        data['jungle_gold_diff'] = data['blue_jungle_gold'] - data['red_jungle_gold']
+        data['middle_gold_diff'] = data['blue_middle_gold'] - data['red_middle_gold']
+        data['bottom_gold_diff'] = data['blue_bottom_gold'] - data['red_bottom_gold']
+        data['utility_gold_diff'] = data['blue_utility_gold'] - data['red_utility_gold']
+
+        df_stats = pd.DataFrame([data], columns=columns)
+
+        blue_champs = input_data.get('blue_champions', [])
+        red_champs = input_data.get('red_champions', [])
+
+        row_champ = np.zeros(len(champions))
+        champ_to_idx = {name: idx for idx, name in enumerate(champions)}
+
+        for name in blue_champs:
+            if name in champ_to_idx:
+                row_champ[champ_to_idx[name]] = 1.0
+
+        for name in red_champs:
+            if name in champ_to_idx:
+                row_champ[champ_to_idx[name]] = -1.0
+
+        df_champ = pd.DataFrame([row_champ], columns=champions)
+
+        df_input = pd.concat([df_stats, df_champ], axis=1)
+
+        # Scale stats part for LR
+        df_stats_scaled = pd.DataFrame(
+            scaler_unified.transform(df_stats),
+            columns=columns
+        )
+        df_input_scaled = pd.concat([df_stats_scaled, df_champ], axis=1)
+
+        lr_prob = float(lr_unified.predict_proba(df_input_scaled)[0, 1])
+        rf_prob = float(rf_unified.predict_proba(df_input)[0, 1])
+        xgb_prob = float(xgb_unified.predict_proba(df_input)[0, 1])
 
         return {
             'success': True,

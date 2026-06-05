@@ -25,6 +25,7 @@ COPY --from=frontend-builder /app/dist ./dist
 # Copy backend scripts and models
 COPY api/ ./api
 COPY server.py ./
+COPY src/data/ ./src/data/
 
 EXPOSE 8080
 

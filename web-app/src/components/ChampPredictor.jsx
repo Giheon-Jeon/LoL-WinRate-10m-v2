@@ -12,9 +12,7 @@ const roles = [
 const defaultBlue = ['Aatrox', 'LeeSin', 'Ahri', 'Ezreal', 'Alistar'];
 const defaultRed = ['Darius', 'Elise', 'Syndra', 'Jinx', 'Thresh'];
 
-const ChampPredictor = ({ onPredict, isLoading }) => {
-  const [blueChamps, setBlueChamps] = useState(defaultBlue);
-  const [redChamps, setRedChamps] = useState(defaultRed);
+const ChampPredictor = ({ blueChamps, setBlueChamps, redChamps, setRedChamps }) => {
   const [champData, setChampData] = useState({});
   const [activeSlot, setActiveSlot] = useState(null); // { team: 'blue'|'red', index: 0-4 }
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,31 +49,6 @@ const ChampPredictor = ({ onPredict, isLoading }) => {
     // If it's a valid champion ID, load from DataDragon
     return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`;
   };
-
-  // Run predictions whenever champion selections change
-  useEffect(() => {
-    const fetchPredictions = async () => {
-      try {
-        const apiHost = import.meta.env.VITE_API_HOST || '';
-        const res = await fetch(`${apiHost}/api/predict_champ`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            blue_champions: blueChamps,
-            red_champions: redChamps,
-          }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          onPredict(data.predictions);
-        }
-      } catch (err) {
-        console.error('Champion prediction failed:', err);
-      }
-    };
-
-    fetchPredictions();
-  }, [blueChamps, redChamps]);
 
   const handleSelectChamp = (champId) => {
     if (!activeSlot) return;
