@@ -19,15 +19,27 @@ const ChampPredictor = ({ onPredict, isLoading }) => {
   const [activeSlot, setActiveSlot] = useState(null); // { team: 'blue'|'red', index: 0-4 }
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch Korean champion metadata from Riot DataDragon
+  const [version, setVersion] = useState('14.24.1'); // Fallback version containing Ambessa/Aurora/Mel
+
+  // Fetch Korean champion metadata from Riot DataDragon using dynamic latest version
   useEffect(() => {
-    fetch('https://ddragon.leagueoflegends.com/cdn/14.10.1/data/ko_KR/champion.json')
+    fetch('https://ddragon.leagueoflegends.com/api/versions.json')
+      .then((res) => res.json())
+      .then((versions) => {
+        const latest = versions[0] || '14.24.1';
+        setVersion(latest);
+        return fetch(`https://ddragon.leagueoflegends.com/cdn/${latest}/data/ko_KR/champion.json`);
+      })
       .then((res) => res.json())
       .then((json) => {
         setChampData(json.data);
       })
       .catch((err) => {
-        console.error('DataDragon fetch failed:', err);
+        console.error('DataDragon fetch failed, using fallback:', err);
+        fetch('https://ddragon.leagueoflegends.com/cdn/14.24.1/data/ko_KR/champion.json')
+          .then((res) => res.json())
+          .then((json) => setChampData(json.data))
+          .catch((err2) => console.error('Fallback fetch failed too:', err2));
       });
   }, []);
 
@@ -37,7 +49,7 @@ const ChampPredictor = ({ onPredict, isLoading }) => {
 
   const getChampImgUrl = (id) => {
     // If it's a valid champion ID, load from DataDragon
-    return `https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/${id}.png`;
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${id}.png`;
   };
 
   // Run predictions whenever champion selections change
@@ -121,7 +133,7 @@ const ChampPredictor = ({ onPredict, isLoading }) => {
                   <img
                     src={getChampImgUrl(champId)}
                     alt={champId}
-                    onError={(e) => { e.target.src = 'https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png' }}
+                    onError={(e) => { e.target.src = `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/Aatrox.png` }}
                     className="h-10 w-10 rounded-md border border-lol-border/50"
                   />
                   <div className="flex-1">
@@ -166,7 +178,7 @@ const ChampPredictor = ({ onPredict, isLoading }) => {
                   <img
                     src={getChampImgUrl(champId)}
                     alt={champId}
-                    onError={(e) => { e.target.src = 'https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/Aatrox.png' }}
+                    onError={(e) => { e.target.src = `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/Aatrox.png` }}
                     className="h-10 w-10 rounded-md border border-lol-border/50"
                   />
                   <div className="flex-1">
