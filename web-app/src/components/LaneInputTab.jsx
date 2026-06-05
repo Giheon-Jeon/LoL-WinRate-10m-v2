@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LaneInputTab = ({ lane, laneTitle, values, onChange, stats }) => {
+const LaneInputTab = ({ lane, laneTitle, values, onChange, onBatchChange, stats }) => {
   const getFieldInfo = (team, field) => {
     const key = `${team}_${lane}_${field}`;
     const defaultStats = { min: 0, max: 15, mean: 2 };
@@ -43,8 +43,79 @@ const LaneInputTab = ({ lane, laneTitle, values, onChange, stats }) => {
   const blueDeaths = values[`blue_${lane}_deaths`] || 0;
   const redDeaths = values[`red_${lane}_deaths`] || 0;
 
+  const applyPreset = (strength) => {
+    const changes = {};
+    const fieldsList = ['gold', 'cs', 'kills', 'deaths'];
+
+    fieldsList.forEach((field) => {
+      const bKey = `blue_${lane}_${field}`;
+      const rKey = `red_${lane}_${field}`;
+      
+      const bMean = stats[bKey]?.mean || 0;
+      const bStd = stats[bKey]?.std || 1;
+      const rMean = stats[rKey]?.mean || 0;
+      const rStd = stats[rKey]?.std || 1;
+
+      let bVal = bMean;
+      let rVal = rMean;
+
+      const isNegativeField = field === 'deaths';
+
+      if (strength === 'blue_stomp') {
+        bVal = isNegativeField ? bMean - bStd * 0.8 : bMean + bStd * 1.3;
+        rVal = isNegativeField ? rMean + rStd * 1.3 : rMean - rStd * 0.9;
+      } else if (strength === 'blue_lead') {
+        bVal = isNegativeField ? bMean - bStd * 0.4 : bMean + bStd * 0.6;
+        rVal = isNegativeField ? rMean + rStd * 0.6 : rMean - rStd * 0.4;
+      } else if (strength === 'red_lead') {
+        bVal = isNegativeField ? bMean + bStd * 0.6 : bMean - bStd * 0.4;
+        rVal = isNegativeField ? rMean - rStd * 0.4 : rMean + rStd * 0.6;
+      } else if (strength === 'red_stomp') {
+        bVal = isNegativeField ? bMean + bStd * 1.3 : bMean - bStd * 0.9;
+        rVal = isNegativeField ? rMean - rStd * 0.8 : rMean + rStd * 1.3;
+      } else {
+        // Even
+        bVal = bMean;
+        rVal = rMean;
+      }
+
+      // Round to 50 for gold, 1 for other fields
+      const bRounded = field === 'gold' ? Math.round(bVal / 50) * 50 : Math.round(bVal);
+      const rRounded = field === 'gold' ? Math.round(rVal / 50) * 50 : Math.round(rVal);
+
+      changes[bKey] = bRounded;
+      changes[rKey] = rRounded;
+    });
+
+    onBatchChange(changes);
+  };
+
+  const presetButtons = [
+    { id: 'blue_stomp', label: '블루 압도 🔵🔥', style: 'border-lol-blue/30 text-lol-blueLight bg-lol-blue/10 hover:bg-lol-blue/20' },
+    { id: 'blue_lead', label: '블루 우세 🔵', style: 'border-lol-blue/20 text-lol-blueLight/80 hover:text-lol-blueLight bg-lol-blue/5' },
+    { id: 'even', label: '대등 ⚖️', style: 'border-lol-border text-lol-goldLight/70 hover:text-lol-gold' },
+    { id: 'red_lead', label: '레드 우세 🔴', style: 'border-lol-redLight/10 text-lol-redLight/80 hover:text-lol-redLight bg-lol-redDark/5' },
+    { id: 'red_stomp', label: '레드 압도 🔴🔥', style: 'border-lol-redLight/20 text-lol-redLight bg-lol-redDark/10 hover:bg-lol-redDark/20' },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
+      {/* Lane Advantage Quick Buttons */}
+      <div className="flex flex-col gap-2 p-3.5 bg-lol-greyDark/50 border border-lol-border/20 rounded-lg shadow-hextech">
+        <span className="text-[11px] font-extrabold text-lol-gold uppercase tracking-wider">라인전 구도 퀵 설정</span>
+        <div className="flex flex-wrap gap-2">
+          {presetButtons.map((btn) => (
+            <button
+              key={btn.id}
+              onClick={() => applyPreset(btn.id)}
+              className={`px-3 py-1.5 text-xs font-bold border rounded transition-all cursor-pointer ${btn.style}`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Dynamic Gold/CS Diff Alert Panel */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="bg-lol-greyDark border border-lol-border/20 rounded p-3 text-center">

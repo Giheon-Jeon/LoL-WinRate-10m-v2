@@ -185,6 +185,21 @@ const App = () => {
     setValues((prev) => ({ ...prev, [key]: clampedValue }));
   };
 
+  const handleBatchValueChange = (changes) => {
+    setValues((prev) => {
+      const next = { ...prev };
+      Object.entries(changes).forEach(([key, value]) => {
+        const stats = metadata.stats[key];
+        let clampedValue = value;
+        if (stats) {
+          clampedValue = Math.max(stats.min, Math.min(stats.max, value));
+        }
+        next[key] = clampedValue;
+      });
+      return next;
+    });
+  };
+
   const loadPreset = (presetName) => {
     setValues(presets[presetName]);
   };
@@ -369,6 +384,7 @@ const App = () => {
                   laneTitle={laneTabs.find((t) => t.id === activeTab)?.title.split(' ')[0] || ''}
                   values={values}
                   onChange={handleValueChange}
+                  onBatchChange={handleBatchValueChange}
                   stats={metadata.stats}
                 />
               )}
