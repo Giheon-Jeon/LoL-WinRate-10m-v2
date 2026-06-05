@@ -55,3 +55,7 @@ coverage/
 # Claude Cache
 teamproject/.claude/
 .claude/
+
+# Python Cache
+__pycache__/
+*.pyc

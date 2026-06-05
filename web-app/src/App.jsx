@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import metadata from './data/unified_metadata.json';
+import metadata from './data/model_metadata.json';
 import GaugeChart from './components/GaugeChart';
 import ConfusionMatrixView from './components/ConfusionMatrixView';
 import LaneInputTab from './components/LaneInputTab';
-import ChampPredictor from './components/ChampPredictor';
 
 // Helper to initialize values to averages
 const getInitialAverages = () => {
@@ -129,27 +128,21 @@ const getPresets = () => {
 const App = () => {
   const presets = getPresets();
   const [values, setValues] = useState(presets.avg);
-  const [blueChamps, setBlueChamps] = useState(['Aatrox', 'LeeSin', 'Ahri', 'Ezreal', 'Alistar']);
-  const [redChamps, setRedChamps] = useState(['Darius', 'Elise', 'Syndra', 'Jinx', 'Thresh']);
-  const [activeTab, setActiveTab] = useState('champions'); // Default to champions tab
+  const [activeTab, setActiveTab] = useState('general'); // Default to general tab
   const [selectedModel, setSelectedModel] = useState('xgb'); // 'lr', 'rf', 'xgb'
   const [predictions, setPredictions] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Run prediction API request (unified stats + picks)
-  const fetchPredictions = async (currentValues, currentBlueChamps, currentRedChamps) => {
+  // Run prediction API request (stats-only)
+  const fetchPredictions = async (currentValues) => {
     setIsLoading(true);
     try {
       const apiHost = import.meta.env.VITE_API_HOST || '';
-      const res = await fetch(`${apiHost}/api/predict_unified`, {
+      const res = await fetch(`${apiHost}/api/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...currentValues,
-          blue_champions: currentBlueChamps,
-          red_champions: currentRedChamps
-        }),
+        body: JSON.stringify(currentValues),
       });
       const data = await res.json();
       if (data.success) {
@@ -166,14 +159,14 @@ const App = () => {
     }
   };
 
-  // Debounce API calls to prevent flooding during slider drag or champion change
+  // Debounce API calls to prevent flooding during slider drag
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchPredictions(values, blueChamps, redChamps);
+      fetchPredictions(values);
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [values, blueChamps, redChamps]);
+  }, [values]);
 
   const handleValueChange = (key, value) => {
     // Clamp values based on statistics boundaries
@@ -290,7 +283,6 @@ const App = () => {
   };
 
   const laneTabs = [
-    { id: 'champions', title: '조합 (Pick)' },
     { id: 'general', title: '공통' },
     { id: 'top', title: '탑 (Top)' },
     { id: 'jungle', title: '정글 (Jng)' },
@@ -314,7 +306,7 @@ const App = () => {
           </h1>
         </div>
         <p className="text-xs md:text-sm text-lol-goldLight/60 max-w-2xl leading-relaxed">
-          Riot Games 상위 티어 경기 데이터를 학습한 AI 모델들을 통해 챔피언 조합과 15분 인게임 지표를 동시에 고려한 실시간 통합 승률을 제공합니다.
+          Riot Games 상위 티어 경기 데이터를 학습한 AI 모델들을 통해 15분 인게임 지표를 기반으로 실시간 승률을 예측합니다.
         </p>
 
         {/* Global Preset Bar */}
@@ -369,14 +361,7 @@ const App = () => {
 
             {/* Active Tab Panel */}
             <div className="bg-lol-obsidian/45 backdrop-blur-md border border-lol-border/30 rounded-lg p-6 shadow-hextech min-h-[350px]">
-              {activeTab === 'champions' ? (
-                <ChampPredictor
-                  blueChamps={blueChamps}
-                  setBlueChamps={setBlueChamps}
-                  redChamps={redChamps}
-                  setRedChamps={setRedChamps}
-                />
-              ) : activeTab === 'general' ? (
+              {activeTab === 'general' ? (
                 renderGeneralTab()
               ) : (
                 <LaneInputTab
@@ -395,7 +380,7 @@ const App = () => {
         {/* Right Column: Prediction Results */}
         <div className="flex flex-col gap-6">
           <h3 className="text-base font-bold text-lol-gold uppercase tracking-wider">
-            실시간 예측 결과 (통합 모델)
+            실시간 예측 결과
           </h3>
 
           {isLoading && !predictions && (
@@ -445,7 +430,7 @@ const App = () => {
       <div className="w-full max-w-6xl mt-12 border-t border-lol-border/30 pt-8 flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-lol-gold uppercase tracking-wider">
-            통합 예측 모델 성능 및 오차행렬
+            예측 모델 성능 및 오차행렬
           </h3>
           <div className="flex gap-2">
             <button
