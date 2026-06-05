@@ -290,13 +290,13 @@ const App = () => {
   };
 
   const laneTabs = [
-    { id: 'champions', title: '챔피언 조합 (Pick)' },
-    { id: 'general', title: '공통 오브젝트' },
+    { id: 'champions', title: '조합 (Pick)' },
+    { id: 'general', title: '공통' },
     { id: 'top', title: '탑 (Top)' },
-    { id: 'jungle', title: '정글 (Jungle)' },
+    { id: 'jungle', title: '정글 (Jng)' },
     { id: 'middle', title: '미드 (Mid)' },
-    { id: 'bottom', title: '바텀/원딜 (Bot)' },
-    { id: 'utility', title: '서포터 (Sup)' },
+    { id: 'bottom', title: '바텀 (Bot)' },
+    { id: 'utility', title: '서폿 (Sup)' },
   ];
 
   return (
@@ -356,7 +356,7 @@ const App = () => {
                 <button
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
-                  className={`px-4 py-2.5 text-xs md:text-sm font-bold tracking-wide transition-all border-b-2 -mb-0.5 ${
+                  className={`px-2 md:px-4 py-2.5 text-[11px] md:text-sm font-bold tracking-wide transition-all border-b-2 -mb-0.5 ${
                     activeTab === t.id
                       ? 'border-lol-gold text-lol-gold bg-lol-greyDark/30'
                       : 'border-transparent text-lol-goldLight/50 hover:text-lol-goldLight'
