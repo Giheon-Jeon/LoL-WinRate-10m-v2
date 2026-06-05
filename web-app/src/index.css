@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lol-blue: #005a82;
+  --color-lol-blueLight: #00a3e0;
+  --color-lol-red: #c8aa6e;
+  --color-lol-redDark: #8c1a1a;
+  --color-lol-redLight: #ff4655;
+  --color-lol-gold: #c8aa6e;
+  --color-lol-goldDark: #785a28;
+  --color-lol-goldLight: #f0e6d2;
+  --color-lol-obsidian: #010a13;
+  --color-lol-greyDark: #091420;
+  --color-lol-greyLight: #1e282d;
+  --color-lol-border: #3c3c41;
+
+  --font-family-inter: 'Inter', sans-serif;
+
+  --shadow-hextech: 0 0 10px rgba(200, 170, 110, 0.3);
+  --shadow-hextechGlow: 0 0 20px rgba(200, 170, 110, 0.6);
+  --shadow-blueGlow: 0 0 20px rgba(0, 163, 224, 0.4);
+  --shadow-redGlow: 0 0 20px rgba(255, 70, 85, 0.4);
+}
+
+@utility shadow-blueGlow {
+  box-shadow: var(--shadow-blueGlow);
+}
+
+@utility shadow-redGlow {
+  box-shadow: var(--shadow-redGlow);
+}
+
+@utility shadow-hextech {
+  box-shadow: var(--shadow-hextech);
+}
+
+@utility shadow-hextechGlow {
+  box-shadow: var(--shadow-hextechGlow);
+}
+
+body {
+  background-color: var(--color-lol-obsidian);
+  color: var(--color-lol-goldLight);
+  font-family: var(--font-family-inter);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar for premium client-like feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #010a13;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e282d;
+  border: 1px solid #3c3c41;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c8aa6e;
+}
+
+/* Hextech metallic border glow helper classes */
+.hextech-border {
+  border: 1px solid;
+  border-image: linear-gradient(to right, #785a28, #c8aa6e, #785a28) 1;
+}
+
+.hextech-card {
+  background: rgba(9, 20, 32, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(200, 170, 110, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hextech-card:hover {
+  border-color: rgba(200, 170, 110, 0.5);
+  box-shadow: 0 0 15px rgba(200, 170, 110, 0.15);
+}

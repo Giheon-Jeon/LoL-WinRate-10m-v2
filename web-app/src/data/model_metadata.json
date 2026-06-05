@@ -1,0 +1,423 @@
+{
+    "columns": [
+        "blue_dragons",
+        "blue_towers",
+        "blue_kills",
+        "blue_firstBlood",
+        "blue_voidgrubs",
+        "red_dragons",
+        "red_towers",
+        "red_kills",
+        "red_voidgrubs",
+        "blue_top_gold",
+        "blue_top_cs",
+        "blue_top_kills",
+        "blue_top_deaths",
+        "red_top_gold",
+        "red_top_cs",
+        "red_top_kills",
+        "red_top_deaths",
+        "top_gold_diff",
+        "blue_jungle_gold",
+        "blue_jungle_cs",
+        "blue_jungle_kills",
+        "blue_jungle_deaths",
+        "red_jungle_gold",
+        "red_jungle_cs",
+        "red_jungle_kills",
+        "red_jungle_deaths",
+        "jungle_gold_diff",
+        "blue_middle_gold",
+        "blue_middle_cs",
+        "blue_middle_kills",
+        "blue_middle_deaths",
+        "red_middle_gold",
+        "red_middle_cs",
+        "red_middle_kills",
+        "red_middle_deaths",
+        "middle_gold_diff",
+        "blue_bottom_gold",
+        "blue_bottom_cs",
+        "blue_bottom_kills",
+        "blue_bottom_deaths",
+        "red_bottom_gold",
+        "red_bottom_cs",
+        "red_bottom_kills",
+        "red_bottom_deaths",
+        "bottom_gold_diff",
+        "blue_utility_gold",
+        "blue_utility_cs",
+        "blue_utility_kills",
+        "blue_utility_deaths",
+        "red_utility_gold",
+        "red_utility_cs",
+        "red_utility_kills",
+        "red_utility_deaths",
+        "utility_gold_diff"
+    ],
+    "stats": {
+        "blue_dragons": {
+            "mean": 0.6110285374554102,
+            "std": 0.6897695683701806,
+            "min": 0.0,
+            "max": 2.0
+        },
+        "blue_towers": {
+            "mean": 0.7302318668252081,
+            "std": 0.8839777107409239,
+            "min": 0.0,
+            "max": 6.0
+        },
+        "blue_kills": {
+            "mean": 13.260404280618312,
+            "std": 5.227291805756234,
+            "min": 0.0,
+            "max": 35.0
+        },
+        "blue_firstBlood": {
+            "mean": 0.5083234244946492,
+            "std": 0.49993071580438214,
+            "min": 0.0,
+            "max": 1.0
+        },
+        "blue_voidgrubs": {
+            "mean": 1.7474732461355529,
+            "std": 1.3359542055385436,
+            "min": 0.0,
+            "max": 3.0
+        },
+        "red_dragons": {
+            "mean": 0.8781212841854935,
+            "std": 0.7355483864503856,
+            "min": 0.0,
+            "max": 2.0
+        },
+        "red_towers": {
+            "mean": 0.7382580261593341,
+            "std": 0.9252753216947723,
+            "min": 0.0,
+            "max": 9.0
+        },
+        "red_kills": {
+            "mean": 13.14283590963139,
+            "std": 5.067553971463221,
+            "min": 0.0,
+            "max": 38.0
+        },
+        "red_voidgrubs": {
+            "mean": 1.2525267538644471,
+            "std": 1.3359542055385436,
+            "min": 0.0,
+            "max": 3.0
+        },
+        "blue_top_gold": {
+            "mean": 5668.7274078478,
+            "std": 1021.4324701283002,
+            "min": 2777.0,
+            "max": 11216.0
+        },
+        "blue_top_cs": {
+            "mean": 114.6242568370987,
+            "std": 20.627594137598724,
+            "min": 30.0,
+            "max": 182.0
+        },
+        "blue_top_kills": {
+            "mean": 2.2132877526753862,
+            "std": 1.9678197370882382,
+            "min": 0.0,
+            "max": 16.0
+        },
+        "blue_top_deaths": {
+            "mean": 2.6734542211652794,
+            "std": 1.872003309767543,
+            "min": 0.0,
+            "max": 13.0
+        },
+        "red_top_gold": {
+            "mean": 5671.517835909632,
+            "std": 1002.7298129918236,
+            "min": 3052.0,
+            "max": 10749.0
+        },
+        "red_top_cs": {
+            "mean": 115.45332936979786,
+            "std": 20.620096236927992,
+            "min": 35.0,
+            "max": 178.0
+        },
+        "red_top_kills": {
+            "mean": 2.232461355529132,
+            "std": 1.9518745540290081,
+            "min": 0.0,
+            "max": 15.0
+        },
+        "red_top_deaths": {
+            "mean": 2.71269322235434,
+            "std": 1.9015465574547719,
+            "min": 0.0,
+            "max": 14.0
+        },
+        "top_gold_diff": {
+            "mean": -2.7904280618311534,
+            "std": 1774.9252772076254,
+            "min": -5819.0,
+            "max": 6703.0
+        },
+        "blue_jungle_gold": {
+            "mean": 6480.599435196195,
+            "std": 951.9031655921551,
+            "min": 2984.0,
+            "max": 10534.0
+        },
+        "blue_jungle_cs": {
+            "mean": 105.6184601664685,
+            "std": 15.024601245138088,
+            "min": 21.0,
+            "max": 176.0
+        },
+        "blue_jungle_kills": {
+            "mean": 3.763228299643282,
+            "std": 2.3948090501421295,
+            "min": 0.0,
+            "max": 16.0
+        },
+        "blue_jungle_deaths": {
+            "mean": 2.2300832342449466,
+            "std": 1.5388272068754885,
+            "min": 0.0,
+            "max": 11.0
+        },
+        "red_jungle_gold": {
+            "mean": 6431.649673008324,
+            "std": 936.4543569631568,
+            "min": 3682.0,
+            "max": 10605.0
+        },
+        "red_jungle_cs": {
+            "mean": 105.54845422116529,
+            "std": 15.410486241374269,
+            "min": 51.0,
+            "max": 182.0
+        },
+        "red_jungle_kills": {
+            "mean": 3.654577883472057,
+            "std": 2.2966410035324585,
+            "min": 0.0,
+            "max": 16.0
+        },
+        "red_jungle_deaths": {
+            "mean": 2.2884958382877527,
+            "std": 1.5896247649255113,
+            "min": 0.0,
+            "max": 12.0
+        },
+        "jungle_gold_diff": {
+            "mean": 48.949762187871585,
+            "std": 1465.9582682754485,
+            "min": -5908.0,
+            "max": 5605.0
+        },
+        "blue_middle_gold": {
+            "mean": 5915.941587395957,
+            "std": 918.0322494688196,
+            "min": 3302.0,
+            "max": 10789.0
+        },
+        "blue_middle_cs": {
+            "mean": 119.97711058263971,
+            "std": 17.87084757581856,
+            "min": 39.0,
+            "max": 179.0
+        },
+        "blue_middle_kills": {
+            "mean": 2.690695600475624,
+            "std": 2.197086816509329,
+            "min": 0.0,
+            "max": 13.0
+        },
+        "blue_middle_deaths": {
+            "mean": 2.4698275862068964,
+            "std": 1.753282762676272,
+            "min": 0.0,
+            "max": 13.0
+        },
+        "red_middle_gold": {
+            "mean": 5925.577734839477,
+            "std": 911.4439943176687,
+            "min": 3357.0,
+            "max": 10491.0
+        },
+        "red_middle_cs": {
+            "mean": 121.00267538644471,
+            "std": 18.087981701169856,
+            "min": 48.0,
+            "max": 180.0
+        },
+        "red_middle_kills": {
+            "mean": 2.6489298454221166,
+            "std": 2.143859005399089,
+            "min": 0.0,
+            "max": 18.0
+        },
+        "red_middle_deaths": {
+            "mean": 2.4662604042806184,
+            "std": 1.75990238587652,
+            "min": 0.0,
+            "max": 12.0
+        },
+        "middle_gold_diff": {
+            "mean": -9.63614744351962,
+            "std": 1493.6582852250856,
+            "min": -5950.0,
+            "max": 6082.0
+        },
+        "blue_bottom_gold": {
+            "mean": 6629.699613555292,
+            "std": 1137.81106603231,
+            "min": 3338.0,
+            "max": 12212.0
+        },
+        "blue_bottom_cs": {
+            "mean": 120.19322235434007,
+            "std": 17.433152481147495,
+            "min": 48.0,
+            "max": 168.0
+        },
+        "blue_bottom_kills": {
+            "mean": 3.175089179548157,
+            "std": 2.404345579868554,
+            "min": 0.0,
+            "max": 17.0
+        },
+        "blue_bottom_deaths": {
+            "mean": 2.9007134363852556,
+            "std": 1.81590593210842,
+            "min": 0.0,
+            "max": 13.0
+        },
+        "red_bottom_gold": {
+            "mean": 6636.89774078478,
+            "std": 1150.4879604813316,
+            "min": 3208.0,
+            "max": 12088.0
+        },
+        "red_bottom_cs": {
+            "mean": 119.76961950059453,
+            "std": 17.422099888937588,
+            "min": 44.0,
+            "max": 171.0
+        },
+        "red_bottom_kills": {
+            "mean": 3.190101070154578,
+            "std": 2.439696622386771,
+            "min": 0.0,
+            "max": 17.0
+        },
+        "red_bottom_deaths": {
+            "mean": 2.924791914387634,
+            "std": 1.8518214475763977,
+            "min": 0.0,
+            "max": 11.0
+        },
+        "bottom_gold_diff": {
+            "mean": -7.198127229488704,
+            "std": 1950.1030283499404,
+            "min": -6535.0,
+            "max": 8275.0
+        },
+        "blue_utility_gold": {
+            "mean": 4526.80142687277,
+            "std": 673.9566202412797,
+            "min": 2852.0,
+            "max": 8701.0
+        },
+        "blue_utility_cs": {
+            "mean": 20.283145065398337,
+            "std": 6.622840085508544,
+            "min": 2.0,
+            "max": 71.0
+        },
+        "blue_utility_kills": {
+            "mean": 1.418103448275862,
+            "std": 1.5402292149166494,
+            "min": 0.0,
+            "max": 11.0
+        },
+        "blue_utility_deaths": {
+            "mean": 2.9359393579072535,
+            "std": 1.8253642097143592,
+            "min": 0.0,
+            "max": 10.0
+        },
+        "red_utility_gold": {
+            "mean": 4541.758026159334,
+            "std": 666.7634292465704,
+            "min": 2773.0,
+            "max": 9385.0
+        },
+        "red_utility_cs": {
+            "mean": 20.32832936979786,
+            "std": 6.703413247812251,
+            "min": 1.0,
+            "max": 65.0
+        },
+        "red_utility_kills": {
+            "mean": 1.4167657550535078,
+            "std": 1.5277549540382065,
+            "min": 0.0,
+            "max": 15.0
+        },
+        "red_utility_deaths": {
+            "mean": 2.9372770511296076,
+            "std": 1.8208043865519727,
+            "min": 0.0,
+            "max": 10.0
+        },
+        "utility_gold_diff": {
+            "mean": -14.956599286563614,
+            "std": 918.368559531843,
+            "min": -5741.0,
+            "max": 4553.0
+        }
+    },
+    "lr": {
+        "accuracy": 0.7859690844233056,
+        "precision": 0.7866831072749692,
+        "recall": 0.7733333333333333,
+        "f1": 0.7799511002444988,
+        "auc": 0.8652890633287367,
+        "confusion_matrix": {
+            "tn": 684,
+            "fp": 173,
+            "fn": 187,
+            "tp": 638
+        }
+    },
+    "rf": {
+        "accuracy": 0.7687277051129607,
+        "precision": 0.7725,
+        "recall": 0.7490909090909091,
+        "f1": 0.7606153846153846,
+        "auc": 0.8531522930589441,
+        "confusion_matrix": {
+            "tn": 675,
+            "fp": 182,
+            "fn": 207,
+            "tp": 618
+        }
+    },
+    "xgb": {
+        "accuracy": 0.7806183115338883,
+        "precision": 0.7800982800982801,
+        "recall": 0.7696969696969697,
+        "f1": 0.7748627211714461,
+        "auc": 0.8574378558042502,
+        "confusion_matrix": {
+            "tn": 678,
+            "fp": 179,
+            "fn": 190,
+            "tp": 635
+        }
+    }
+}
