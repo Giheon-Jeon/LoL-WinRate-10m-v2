@@ -60,7 +60,7 @@ const ConfusionMatrixView = ({ metrics, modelName }) => {
           </div>
         </div>
         <p className="text-[11px] text-lol-goldLight/40 mt-3 italic leading-relaxed">
-          * 테스트 세트 ({total}경기) 기준 평가 결과입니다. 초록색 상자(TN, TP)는 예측이 일치한 정확한 판단이며, 붉은색 상자(FP, FN)는 예측이 빗나간 판단입니다.
+          * 전체 데이터 세트 ({total}경기) 기준 평가 결과입니다. 초록색 상자(TN, TP)는 예측이 일치한 정확한 판단이며, 붉은색 상자(FP, FN)는 예측이 빗나간 판단입니다.
         </p>
       </div>
 
