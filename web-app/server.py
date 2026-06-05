@@ -28,6 +28,17 @@ lr_model = joblib.load(os.path.join(models_dir, 'lr_model.pkl'))
 rf_model = joblib.load(os.path.join(models_dir, 'rf_model.pkl'))
 xgb_model = joblib.load(os.path.join(models_dir, 'xgb_model.pkl'))
 
+# Load champion models and metadata
+import json
+champ_metadata_path = os.path.join(current_dir, 'src', 'data', 'champ_metadata.json')
+with open(champ_metadata_path, 'r', encoding='utf-8') as f:
+    champ_metadata = json.load(f)
+champions = champ_metadata['champions']
+
+lr_champ = joblib.load(os.path.join(models_dir, 'lr_champ.pkl'))
+rf_champ = joblib.load(os.path.join(models_dir, 'rf_champ.pkl'))
+xgb_champ = joblib.load(os.path.join(models_dir, 'xgb_champ.pkl'))
+
 columns = [
     'blue_dragons', 'blue_towers', 'blue_kills', 'blue_firstBlood', 'blue_voidgrubs',
     'red_dragons', 'red_towers', 'red_kills', 'red_voidgrubs',
@@ -63,6 +74,49 @@ async def predict(input_data: dict):
         lr_prob = float(lr_model.predict_proba(X_scaled)[0, 1])
         rf_prob = float(rf_model.predict_proba(df_input)[0, 1])
         xgb_prob = float(xgb_model.predict_proba(df_input)[0, 1])
+
+        return {
+            'success': True,
+            'predictions': {
+                'logistic_regression': {
+                    'blue_win_rate': round(lr_prob * 100, 2),
+                    'red_win_rate': round((1 - lr_prob) * 100, 2)
+                },
+                'random_forest': {
+                    'blue_win_rate': round(rf_prob * 100, 2),
+                    'red_win_rate': round((1 - rf_prob) * 100, 2)
+                },
+                'xgboost': {
+                    'blue_win_rate': round(xgb_prob * 100, 2),
+                    'red_win_rate': round((1 - xgb_prob) * 100, 2)
+                }
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/predict_champ")
+async def predict_champ(input_data: dict):
+    try:
+        blue_champs = input_data.get('blue_champions', [])
+        red_champs = input_data.get('red_champions', [])
+
+        row = np.zeros(len(champions))
+        champ_to_idx = {name: idx for idx, name in enumerate(champions)}
+
+        for name in blue_champs:
+            if name in champ_to_idx:
+                row[champ_to_idx[name]] = 1.0
+
+        for name in red_champs:
+            if name in champ_to_idx:
+                row[champ_to_idx[name]] = -1.0
+
+        df_input = pd.DataFrame([row], columns=champions)
+
+        lr_prob = float(lr_champ.predict_proba(df_input)[0, 1])
+        rf_prob = float(rf_champ.predict_proba(df_input)[0, 1])
+        xgb_prob = float(xgb_champ.predict_proba(df_input)[0, 1])
 
         return {
             'success': True,
